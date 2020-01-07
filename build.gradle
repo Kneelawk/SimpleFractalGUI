@@ -1,0 +1,64 @@
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+    id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.6.0'
+    id 'org.beryx.jlink' version '2.17.0'
+}
+
+group 'com.kneelawk'
+version '0.0.1-SNAPSHOT'
+
+sourceCompatibility = 13
+
+project.ext.junitVersion = '5.5.2'
+project.ext.jfxVersion = '13.0.1'
+project.ext.guavaVersion = '28.2-jre'
+project.ext.commonsLangVersion = '3.9'
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+        project.ext.jfxPlatform = "linux"
+        break
+    case OperatingSystem.MAC_OS:
+        project.ext.jfxPlatform = "mac"
+        break
+    case OperatingSystem.WINDOWS:
+        project.ext.jfxPlatform = "win"
+        break
+}
+
+mainClassName = "$moduleName/com.kneelawk.simplefractalgui.SimpleFractalGUI"
+
+run {
+    moduleOptions {
+        addModules = [
+                'java.sql'
+        ]
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.openjfx:javafx-base:$jfxVersion:$jfxPlatform"
+    implementation "org.openjfx:javafx-graphics:$jfxVersion:$jfxPlatform"
+    implementation "org.openjfx:javafx-controls:$jfxVersion:$jfxPlatform"
+
+    implementation "com.google.guava:guava:$guavaVersion"
+    implementation "org.apache.commons:commons-lang3:$commonsLangVersion"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jlink {
+    launcher {
+        name = "SimpleFractalGUI"
+    }
+}
